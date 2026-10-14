@@ -1,9 +1,15 @@
-
 #include <stdio.h>
+
+typedef struct {
+    char nome[25];
+    int tempoChegada;
+    int tempoExec;
+    int tempoRestante;
+} Processo;
 
 int main() {
     int opcao;
-
+    
     do {
         printf("\n====================================\n");
         printf(" SIMULADOR DE ESCALONAMENTO DE CPU\n");
