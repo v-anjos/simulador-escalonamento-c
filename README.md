@@ -73,7 +73,7 @@ O projeto está em desenvolvimento.
 
 ## 👥 Integrantes
 
-- Integrante 1
+- Kaiky Otavio Brito Oliveira
 - Douglas Ruan Corrêa 
 - Vinicius de Araujo dos Anjos
 
