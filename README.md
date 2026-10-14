@@ -74,7 +74,7 @@ O projeto está em desenvolvimento.
 ## 👥 Integrantes
 
 - Integrante 1
-- Integrante 2
+- Douglas Ruan Corrêa 
 - Vinicius de Araujo dos Anjos
 
 ## 📚 Informações acadêmicas
