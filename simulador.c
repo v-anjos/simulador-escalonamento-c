@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 
 #define MAX_PROCESSOS 100
@@ -56,6 +55,32 @@ void listarProcessos(Processo processos[], int quantidade) {
                processos[i].tempoExecucao,
                processos[i].tempoRestante);
     }
+}
+
+// Funcao que exibe os processos que estao prontos
+void mostrarProntos(Processo processos[], int quantidade, int tempoAtual, int executando) {
+    int encontrou = 0;
+
+    printf("Prontos: ");
+
+    for (int i = 0; i < quantidade; i++) {
+        if (processos[i].tempoChegada <= tempoAtual &&
+            processos[i].tempoRestante > 0 &&
+            i != executando) {
+
+            printf("%s(%d) ",
+                   processos[i].nome,
+                   processos[i].tempoRestante);
+
+            encontrou = 1;
+        }
+    }
+
+    if (encontrou == 0) {
+        printf("Nenhum");
+    }
+
+    printf("\n");
 }
 
 // Algoritmo Shortest Remaining Time (SRT)
