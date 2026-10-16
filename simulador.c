@@ -117,6 +117,7 @@ void executarSRT(Processo processos[], int quantidade) {
         printf("Tempo %d: Executando %s\n",
                tempoAtual, processos[menor].nome);
 
+        mostrarProntos(processos, quantidade, tempoAtual, menor);
         processos[menor].tempoRestante--;
         tempoAtual++;
 
