@@ -1,196 +1,95 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <limits.h>
 
 #define MAX_PROCESSOS 100
+#define TAM_NOME 20
 
-// Estrutura que armazena os dados de um processo
 typedef struct {
-    char nome[20];
+    char nome[TAM_NOME];
     int tempoChegada;
     int tempoExecucao;
     int tempoRestante;
 } Processo;
 
-// Funcao responsavel pelo cadastro dos processos
+int lerInteiro(const char *mensagem, int minimo, int maximo) {
+    char linha[128], extra;
+    int valor;
+    while (1) {
+        printf("%s", mensagem);
+        if (!fgets(linha, sizeof(linha), stdin)) {
+            puts("Entrada encerrada.");
+            exit(EXIT_FAILURE);
+        }
+        if (strchr(linha, '\n') == NULL && !feof(stdin)) {
+            int c;
+            while ((c = getchar()) != '\n' && c != EOF) {}
+            puts("Entrada muito longa. Tente novamente.");
+            continue;
+        }
+        if (sscanf(linha, " %d %c", &valor, &extra) != 1 ||
+            valor < minimo || valor > maximo) {
+            printf("Digite um numero inteiro entre %d e %d.\n", minimo, maximo);
+            continue;
+        }
+        return valor;
+    }
+}
+
 void cadastrarProcessos(Processo processos[], int quantidade) {
+    char linha[128], extra;
     for (int i = 0; i < quantidade; i++) {
         printf("\n--- Processo %d ---\n", i + 1);
-
-        printf("Nome do processo: ");
-        scanf("%19s", processos[i].nome);
-
-        do {
-            printf("Tempo de chegada: ");
-            scanf("%d", &processos[i].tempoChegada);
-
-            if (processos[i].tempoChegada < 0) {
-                printf("O tempo de chegada nao pode ser negativo!\n");
+        while (1) {
+            printf("Nome do processo (sem espacos): ");
+            if (!fgets(linha, sizeof(linha), stdin)) exit(EXIT_FAILURE);
+            if (strchr(linha, '\n') == NULL && !feof(stdin)) {
+                int c;
+                while ((c = getchar()) != '\n' && c != EOF) {}
+                puts("Nome muito longo.");
+                continue;
             }
-        } while (processos[i].tempoChegada < 0);
-
-        do {
-            printf("Tempo de execucao (Burst Time): ");
-            scanf("%d", &processos[i].tempoExecucao);
-
-            if (processos[i].tempoExecucao <= 0) {
-                printf("O tempo de execucao deve ser maior que zero!\n");
+            if (sscanf(linha, " %19s %c", processos[i].nome, &extra) != 1) {
+                puts("Informe um nome valido, com ate 19 caracteres e sem espacos.");
+                continue;
             }
-        } while (processos[i].tempoExecucao <= 0);
-
-        // Inicializa o tempo restante
+            int repetido = 0;
+            for (int j = 0; j < i; j++) {
+                if (strcmp(processos[j].nome, processos[i].nome) == 0) repetido = 1;
+            }
+            if (repetido) {
+                puts("Esse nome ja foi cadastrado.");
+                continue;
+            }
+            break;
+        }
+        processos[i].tempoChegada = lerInteiro("Tempo de chegada: ", 0, 100000);
+        processos[i].tempoExecucao = lerInteiro("Tempo de execucao (Burst Time): ", 1, 100000);
         processos[i].tempoRestante = processos[i].tempoExecucao;
     }
 }
 
-// Funcao que exibe os processos cadastrados
-void listarProcessos(Processo processos[], int quantidade) {
+void listarProcessos(const Processo processos[], int quantidade) {
     printf("\n========== PROCESSOS CADASTRADOS ==========\n");
-
-    printf("%-12s %-12s %-12s %-12s\n",
-           "Processo", "Chegada", "Execucao", "Restante");
-
+    printf("%-20s %-10s %-10s %-10s\n", "Processo", "Chegada", "Execucao", "Restante");
     for (int i = 0; i < quantidade; i++) {
-        printf("%-12s %-12d %-12d %-12d\n",
-               processos[i].nome,
-               processos[i].tempoChegada,
-               processos[i].tempoExecucao,
+        printf("%-20s %-10d %-10d %-10d\n", processos[i].nome,
+               processos[i].tempoChegada, processos[i].tempoExecucao,
                processos[i].tempoRestante);
     }
 }
 
-// Funcao que exibe os processos que estao prontos
-void mostrarProntos(Processo processos[], int quantidade, int tempoAtual, int executando) {
+void mostrarProntosSRT(const Processo processos[], int quantidade, int tempo, int executando) {
     int encontrou = 0;
-
     printf("Prontos: ");
-
     for (int i = 0; i < quantidade; i++) {
-        if (processos[i].tempoChegada <= tempoAtual &&
-            processos[i].tempoRestante > 0 &&
-            i != executando) {
-
-            printf("%s(%d) ",
-                   processos[i].nome,
-                   processos[i].tempoRestante);
-
+        if (i != executando && processos[i].tempoChegada <= tempo &&
+            processos[i].tempoRestante > 0) {
+            printf("%s(%d) ", processos[i].nome, processos[i].tempoRestante);
             encontrou = 1;
         }
     }
-
-    if (encontrou == 0) {
-        printf("Nenhum");
-    }
-
-    printf("\n");
-}
-
-// Algoritmo Shortest Remaining Time (SRT)
-void executarSRT(Processo processos[], int quantidade) {
-    int tempoAtual = 0;
-    int concluidos = 0;
-
-    printf("\n========== EXECUCAO SRT ==========\n");
-
-    while (concluidos < quantidade) {
-        int menor = -1;
-
-        // Procura o processo pronto com menor tempo restante
-        for (int i = 0; i < quantidade; i++) {
-            if (processos[i].tempoChegada <= tempoAtual &&
-                processos[i].tempoRestante > 0) {
-
-                if (menor == -1 ||
-                    processos[i].tempoRestante <
-                    processos[menor].tempoRestante) {
-                    menor = i;
-                }
-            }
-        }
-
-        // Nenhum processo disponivel
-        if (menor == -1) {
-            printf("Tempo %d: CPU ociosa\n", tempoAtual);
-            tempoAtual++;
-            continue;
-        }
-
-        // Executa o processo por uma unidade de tempo
-        printf("Tempo %d: Executando %s\n",
-               tempoAtual, processos[menor].nome);
-
-        mostrarProntos(processos, quantidade, tempoAtual, menor);
-        processos[menor].tempoRestante--;
-        tempoAtual++;
-
-        // Verifica se o processo terminou
-        if (processos[menor].tempoRestante == 0) {
-            concluidos++;
-
-            printf("Processo %s finalizado no tempo %d\n",
-                   processos[menor].nome, tempoAtual);
-        }
-    }
-
-    printf("\nTodos os processos foram finalizados!\n");
-}
-
-// Funcao principal
-int main() {
-    Processo processos[MAX_PROCESSOS];
-    int quantidade;
-    int opcao;
-
-    do {
-        printf("\n====================================\n");
-        printf(" SIMULADOR DE ESCALONAMENTO DE CPU\n");
-        printf("====================================\n");
-        printf("1 - Shortest Remaining Time (SRT)\n");
-        printf("2 - Round-Robin (RR)\n");
-        printf("0 - Sair\n");
-        printf("------------------------------------\n");
-        printf("Escolha uma opcao: ");
-
-        if (scanf("%d", &opcao) != 1) {
-            printf("\nEntrada invalida!\n");
-            return 1;
-        }
-
-        switch (opcao) {
-            case 1:
-            case 2:
-                do {
-                    printf("\nQuantidade de processos (1 a %d): ",
-                           MAX_PROCESSOS);
-
-                    if (scanf("%d", &quantidade) != 1) {
-                        printf("Entrada invalida!\n");
-                        return 1;
-                    }
-
-                    if (quantidade < 1 || quantidade > MAX_PROCESSOS) {
-                        printf("Quantidade invalida!\n");
-                    }
-
-                } while (quantidade < 1 || quantidade > MAX_PROCESSOS);
-
-                cadastrarProcessos(processos, quantidade);
-                listarProcessos(processos, quantidade);
-
-                if (opcao == 1) {
-                    executarSRT(processos, quantidade);
-                } else {
-                    printf("\nRound-Robin em desenvolvimento...\n");
-                }
-                break;
-
-            case 0:
-                printf("\nEncerrando o programa...\n");
-                break;
-
-            default:
-                printf("\nOpcao invalida!\n");
-        }
-
-    } while (opcao != 0);
-
-    return 0;
+    if (!encontrou) printf("Nenhum");
+    putchar('\n');
 }
