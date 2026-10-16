@@ -58,18 +58,18 @@ A simulação deverá apresentar, a cada unidade de tempo:
 
 ## 🚧 Status do desenvolvimento
 
-O projeto está em desenvolvimento.
+O projeto desenvolvido e implementado.
 
 - [x] Criação e documentação inicial do repositório
-- [ ] Estruturação dos arquivos do projeto
-- [ ] Definição das estruturas de dados dos processos
-- [ ] Implementação da entrada manual dos processos
-- [ ] Implementação do algoritmo SRT
-- [ ] Implementação do algoritmo Round-Robin
-- [ ] Implementação da timeline
-- [ ] Testes e validação das simulações
-- [ ] Documentação final e instruções de execução
-- [ ] Gravação do vídeo de apresentação
+- [X] Estruturação dos arquivos do projeto
+- [X] Definição das estruturas de dados dos processos
+- [X] Implementação da entrada manual dos processos
+- [X] Implementação do algoritmo SRT
+- [X] Implementação do algoritmo Round-Robin
+- [X] Implementação da timeline
+- [X] Testes e validação das simulações
+- [X] Documentação final e instruções de execução
+- [X] Gravação do vídeo de apresentação
 
 ## 👥 Integrantes
 
