@@ -69,7 +69,7 @@ O projeto desenvolvido e implementado.
 - [X] Implementação da timeline
 - [X] Testes e validação das simulações
 - [X] Documentação final e instruções de execução
-- [X] Gravação do vídeo de apresentação
+- [X] Gravação do vídeo de apresentação --> disponível em () 
 
 ## 👥 Integrantes
 
